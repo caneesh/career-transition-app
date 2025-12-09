@@ -155,18 +155,26 @@ st.plotly_chart(fig, use_container_width=True)
 
 # --- THE UPSELL (SMOKE TEST) ---
 st.info(f"💡 Analysis: You are planning for a **{months}-month** transition. Your money runs out in **{metrics['runway']:.1f} months**.")
+# Replace the old st.button logic with this:
+st.markdown("### 🚀 Ready to escape?")
+url = "https://forms.google.com/your-form-id-here" # Replace with your real Google Form link
 
 if metrics['gap'] > 0:
-    st.error(f"🚨 GAP DETECTED: You are short by ${metrics['gap']:,.0f}.")
-    st.markdown("""
-    ### Don't Panic. You just need a better plan.
-    We can build a custom roadmap to bridge this gap by:
-    1. Finding freelance work using your *current* skills.
-    2. Accelerating your learning path to {months - 2} months.
-    3. Negotiating a signing bonus.
-    """)
-    st.button("👉 Get My Personalized Escape Plan ($29)")
+    st.link_button("👉 Apply for a Custom Bridge Plan (Beta)", url)
 else:
-    st.success("✅ YOU ARE SAFE: You have the capital to quit.")
-    st.markdown("Now the only risk is **wasting time** on the wrong skills.")
-    st.button("👉 Get My Optimized Curriculum ($29)")
+    st.link_button("👉 Get My Career Pivot Roadmap (Beta)", url)
+
+# if metrics['gap'] > 0:
+#     st.error(f"🚨 GAP DETECTED: You are short by ${metrics['gap']:,.0f}.")
+#     st.markdown("""
+#     ### Don't Panic. You just need a better plan.
+#     We can build a custom roadmap to bridge this gap by:
+#     1. Finding freelance work using your *current* skills.
+#     2. Accelerating your learning path to {months - 2} months.
+#     3. Negotiating a signing bonus.
+#     """)
+#     st.button("👉 Get My Personalized Escape Plan ($29)")
+# else:
+#     st.success("✅ YOU ARE SAFE: You have the capital to quit.")
+#     st.markdown("Now the only risk is **wasting time** on the wrong skills.")
+#     st.button("👉 Get My Optimized Curriculum ($29)")
