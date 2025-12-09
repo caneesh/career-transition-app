@@ -157,7 +157,7 @@ st.plotly_chart(fig, use_container_width=True)
 st.info(f"💡 Analysis: You are planning for a **{months}-month** transition. Your money runs out in **{metrics['runway']:.1f} months**.")
 # Replace the old st.button logic with this:
 st.markdown("### 🚀 Ready to escape?")
-url = "https://forms.google.com/your-form-id-here" # Replace with your real Google Form link
+url = "https://docs.google.com/forms/d/e/1FAIpQLSe1xWm6b_tSREq81IY8cnojsLns8q39Bu3FBy17lFMjWOAhRw/viewform?usp=header" # Replace with your real Google Form link
 
 if metrics['gap'] > 0:
     st.link_button("👉 Apply for a Custom Bridge Plan (Beta)", url)
