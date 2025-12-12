@@ -42,22 +42,12 @@ async def health_check():
 async def analyze_transition(profile: FinancialProfile) -> TransitionPlan:
     """
     Analyze financial profile and generate transition plan.
-
-    Args:
-        profile: FinancialProfile containing user's financial information
-
-    Returns:
-        TransitionPlan with calculations and recommendations
-
-    Raises:
-        HTTPException: If validation or calculation fails
     """
     try:
-        # Create financial bridge calculator
-        bridge = FinancialBridge(profile)
-
-        # Perform analysis
-        plan = bridge.analyze()
+        # --- THE FIX IS HERE ---
+        # We call the static method directly. 
+        # We DO NOT write 'bridge = FinancialBridge(profile)' anymore.
+        plan = FinancialBridge.calculate(profile)
 
         return plan
 

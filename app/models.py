@@ -1,23 +1,32 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
+# --- NEW: AI Advice Structure ---
+class LearningResource(BaseModel):
+    name: str
+    cost: str
+    url: Optional[str] = None
 
+class AIStrategy(BaseModel):
+    verdict: str = Field(..., description="Risk assessment: Low, Medium, High")
+    action_plan: List[str] = Field(..., description="Immediate steps to take")
+    resources: List[LearningResource] = Field(..., description="Recommended courses/books")
+
+# --- EXISTING: Financial Models (Kept valid) ---
 class FinancialProfile(BaseModel):
-    """Financial profile for career transition analysis"""
-    current_salary: float = Field(..., description="Current annual salary", gt=0)
-    monthly_expenses: float = Field(..., description="Monthly living expenses", gt=0)
-    current_savings: float = Field(..., description="Current savings amount", ge=0)
-    transition_months: int = Field(..., description="Expected months for transition", gt=0)
-    new_salary: Optional[float] = Field(None, description="Expected new salary (if known)", gt=0)
-    emergency_fund_months: int = Field(3, description="Desired months of emergency fund", gt=0)
-
+    current_salary: float = Field(..., gt=0)
+    monthly_expenses: float = Field(..., gt=0)
+    current_savings: float = Field(..., ge=0)
+    transition_months: int = Field(..., gt=0)
+    new_salary: Optional[float] = Field(None)
+    emergency_fund_months: int = Field(3)
 
 class TransitionPlan(BaseModel):
-    """Career transition financial plan results"""
-    monthly_burn_rate: float = Field(..., description="Monthly spending rate during transition")
-    total_runway_months: float = Field(..., description="Months of financial runway available")
-    capital_gap: float = Field(..., description="Additional capital needed (negative if surplus)")
-    emergency_fund_needed: float = Field(..., description="Emergency fund amount needed")
-    total_capital_needed: float = Field(..., description="Total capital required for safe transition")
-    is_financially_ready: bool = Field(..., description="Whether financially ready for transition")
-    recommendations: list[str] = Field(..., description="Financial recommendations")
+    # Financials
+    monthly_burn_rate: float
+    total_runway_months: float
+    capital_gap: float
+    is_financially_ready: bool
+    
+    # The New "Brain" Section
+    strategy: AIStrategy  # <--- This is the new part!
