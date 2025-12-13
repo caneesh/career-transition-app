@@ -1,12 +1,68 @@
 import streamlit as st
 import pandas as pd
 import requests
+from fpdf import FPDF  # <--- NEW LIBRARY
 
 # --- CONFIGURATION ---
-API_URL = "https://career-pivot-api.onrender.com/analyze" 
+# API_URL = "http://127.0.0.1:8000/analyze" 
+API_URL = "https://career-pivot-api.onrender.com/analyze" # Production URL
 
 st.set_page_config(page_title="CareerPivot AI", layout="wide")
 st.title("🚀 CareerPivot: AI-Powered Escape Planner")
+
+# --- PDF GENERATOR FUNCTION ---
+def create_pdf(data):
+    class PDF(FPDF):
+        def header(self):
+            self.set_font('Arial', 'B', 16)
+            self.cell(0, 10, 'CareerPivot Escape Plan', 0, 1, 'C')
+            self.ln(10)
+
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # 1. Financial Snapshot
+    pdf.set_font("Arial", 'B', 14)
+    pdf.cell(0, 10, "1. The Financial Reality", 0, 1)
+    pdf.set_font("Arial", size=12)
+    
+    pdf.cell(0, 10, f"Monthly Burn: ${data['monthly_burn_rate']:,.0f}", 0, 1)
+    pdf.cell(0, 10, f"Runway: {data['total_runway_months']:.1f} Months", 0, 1)
+    pdf.cell(0, 10, f"Capital Gap: ${data['capital_gap']:,.0f}", 0, 1)
+    pdf.ln(5)
+
+    # 2. AI Strategy
+    if 'strategy' in data:
+        strategy = data['strategy']
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(0, 10, f"2. AI Verdict: {strategy['verdict']}", 0, 1)
+        pdf.ln(5)
+
+        # Actions
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(0, 10, "Immediate Actions:", 0, 1)
+        pdf.set_font("Arial", size=11)
+        for action in strategy['action_plan']:
+            # Clean text to avoid unicode errors in standard FPDF
+            safe_text = action.encode('latin-1', 'replace').decode('latin-1')
+            pdf.multi_cell(0, 8, f"- {safe_text}")
+        pdf.ln(5)
+
+        # Resources
+        pdf.set_font("Arial", 'B', 12)
+        pdf.cell(0, 10, "Recommended Resources:", 0, 1)
+        pdf.set_font("Arial", size=11)
+        for res in strategy['resources']:
+            if isinstance(res, dict):
+                name = res.get('name', '').encode('latin-1', 'replace').decode('latin-1')
+                cost = res.get('cost', '').encode('latin-1', 'replace').decode('latin-1')
+                pdf.multi_cell(0, 8, f"- {name} ({cost})")
+            else:
+                safe_res = str(res).encode('latin-1', 'replace').decode('latin-1')
+                pdf.multi_cell(0, 8, f"- {safe_res}")
+
+    return pdf.output(dest='S').encode('latin-1')
 
 # --- SIDEBAR INPUTS ---
 st.sidebar.header("1. Your Finances")
@@ -67,7 +123,6 @@ if st.button("Generate My Escape Plan"):
                     st.subheader(f"🤖 AI Verdict: {strategy['verdict']}")
                     
                     c1, c2 = st.columns(2)
-                    
                     with c1:
                         st.info("### 🛑 Immediate Action Plan")
                         for action in strategy['action_plan']:
@@ -82,11 +137,18 @@ if st.button("Generate My Escape Plan"):
                             else:
                                 st.write(f"• {res}")
                 
-                # --- SECTION 3: VISUALIZATION ---
+                # --- SECTION 3: DOWNLOAD PDF ---
                 st.divider()
+                pdf_bytes = create_pdf(data)
+                st.download_button(
+                    label="📄 Download My Escape Plan (PDF)",
+                    data=pdf_bytes,
+                    file_name="career_pivot_plan.pdf",
+                    mime="application/pdf"
+                )
+
+                # --- SECTION 4: VISUALIZATION ---
                 st.subheader("📉 Burn Down Chart")
-                
-                # Simple projection logic for the chart
                 months_range = list(range(13))
                 start_bal = total_savings - float(bootcamp_cost)
                 burn = data['monthly_burn_rate']
