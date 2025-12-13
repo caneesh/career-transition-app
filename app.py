@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 
 # --- CONFIGURATION ---
-API_URL = "https://career-pivot-api.onrender.com" 
+API_URL = "https://career-pivot-api.onrender.com/analyze" 
 
 st.set_page_config(page_title="CareerPivot AI", layout="wide")
 st.title("🚀 CareerPivot: AI-Powered Escape Planner")
